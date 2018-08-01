@@ -1,14 +1,20 @@
 const expect = require('expect')
 const request = require('supertest')
- 
+const {ObjectID} = require('mongodb') 
 
 const {app} = require('./../server')
 const {Todo} = require('./../models/todo')
 
 
 const todos = [
-    {text:"One"},
-    {text:"Two"}
+    {
+        _id: new ObjectID(),
+        text:"One"
+    },
+    {
+        _id: new ObjectID(),
+        text:"Two"
+    }
 ]
 
 beforeEach((done) => {
@@ -72,5 +78,33 @@ describe('GET /todos', () => {
             .end(done)
 
     })
+
+   
 })
 
+describe('GET /todos', () => {
+    it('should return todo doc', (done) => {
+        request(app)    //toHexString() trasforma l'object ID in una string
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=> {
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end(done)
+    })
+
+    it('should return 404 if todo not found', (done) => {
+        const not_saved_id = new ObjectID().toHexString()
+        request(app)
+            .get(`/todos/${not_saved_id}`)
+            .expect(404)
+            .end(done)
+    })
+
+    it('should return 404 for not object ID', (done) => {
+        request(app)
+            .get(`/todos/123`)
+            .expect(404)
+            .end(done)
+    })    
+})
