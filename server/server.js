@@ -24,9 +24,15 @@ app.post('/todos', function (req, res) {
     })
 })
 
-app.get('/', function (req, res) {
-    res.send('hello world')
-  })
+app.get('/todos', function (req, res) {
+    Todo.find().then((todos)=>{  //get all todos
+        res.send({
+            todos   //todos: todos
+        })
+    },(e)=>{
+        res.status(400).send(e)
+    })
+})
 
 app.listen(3000, () => {
     console.log('Started on port 3000')
