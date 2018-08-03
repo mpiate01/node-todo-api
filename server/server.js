@@ -18,9 +18,9 @@ const port = process.env.PORT
 //middleware
 app.use(bodyParser.json())
 
-// app.post('/todos', (req, res) => {
-//     console.log(req.body)
-// })  
+//TODO----------------------------------------------------------
+ 
+//save
 app.post('/todos', function (req, res) {
     const todo = new Todo({
         text: req.body.text
@@ -117,6 +117,48 @@ app.patch('/todos/:id', (req,res) => {
         res.status(400).send()
     })
 })
+
+
+
+//USER------------------------
+
+//save
+app.post('/users', function (req, res) {
+    const body = _.pick(req.body, ['email', 'password'])
+    // const user = new User({
+    //     email:body.email,
+    //     password: body.password
+    // })   altrimenti
+    const user = new User(body)
+
+
+
+    user.save().then(()=>{
+        return user.generateAuthToken()
+    }).then((token) => {
+        //qui si usa header() per dare dettagli riguardo il token returned che poi verra'
+        // utilizzato per controllare che il token sia originale al momento in cui si 
+        //faranno modifiche ai todo presenti nel database
+        res.header('x-auth', token).send({user}) 
+    }).catch( (e) => {
+        res.status(400).send(e)
+    })
+})
+
+
+//get
+app.get('/users', function (req, res) {
+    User.find().then((users)=>{  //get all todos
+        res.send({
+            users  //todos: todos
+        })
+    },(e)=>{
+        res.status(400).send(e)
+    })
+})
+
+
+
 
 app.listen(port, () => {
     console.log(`Started on port ${port}`)
