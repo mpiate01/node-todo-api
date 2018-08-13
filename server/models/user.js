@@ -78,6 +78,18 @@ UserSchema.methods.generateAuthToken = function() {
     //Fatto cosi con 2 return perche' e' una Promise chain, infatti questo method viene utilizzato in server.js dentro ad un Promise
 }
 
+UserSchema.methods.removeToken = function (token) {
+    //$pull   trova e rimuove 
+    const user = this
+    return user.update({
+        $pull: {
+            tokens: {
+                token: token
+            }
+        }
+    })
+}
+
 UserSchema.statics.findByToken = function(token) {
     const User = this
     let decoded
@@ -105,8 +117,8 @@ UserSchema.statics.findByCredentials = function(email, password) {
             return Promise.reject()
         }
         
-        return new Promise ((resolve, reject) => {
-            
+        return new Promise ((resolve, reject) => {  
+            //bycrypt prende solo callbacks and not Promise          
             bcrypt.compare(password, user.password, (err, res) => {            
                 if(res) {
                     resolve(user)
@@ -115,18 +127,9 @@ UserSchema.statics.findByCredentials = function(email, password) {
                 }
             })         
         })
-
-
-        // if(!req.granted) {
-        //     return res.status(400).send()
-        // }
-        console.log(req.granted)
-        res.send({user})    
-    }).catch((err)=> {
-            res.status(400).send(err)
     })
-
 }
+
 
 UserSchema.pre('save', function(next){
     const user = this

@@ -59,7 +59,6 @@ app.get(`/todos/:id`, function(req, res) {
             todo   
         })        
     }).catch((e)=>{
-        console.log('dddddddddddd')
         res.status(400).send()
     })
 
@@ -158,7 +157,14 @@ app.post('/users/login', function (req, res) {
     }).catch((err)=> {
             res.status(400).send(err)
     })
+})
 
+app.delete('/users/me/token', authenticate, function(req, res){
+    req.user.removeToken(req.token).then(()=>{
+        res.status(200).send()
+    }).catch((e)=>{
+        res.status(400).send(e)
+    })
 })
 
 // User.findOne({email: body.email}).then((user) => {
