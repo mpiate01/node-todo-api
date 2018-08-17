@@ -17,7 +17,11 @@ const users = [{
 }, {
     _id: userTwoID,
     email: '2pih.at@ddd.com',
-    password: 'userpass2'
+    password: 'userpass2',
+    tokens: [{
+        access: 'auth',
+        token: jws.sign({_id:userTwoID, access:'auth'}, 'abc123').toString()
+    }]
 }]
 
 const todos = [
@@ -25,13 +29,15 @@ const todos = [
         _id: new ObjectID(),
         text:"One",
         completed:false,
-        completedAt: null
+        completedAt: null,
+        _creator:  userOneID
     },
     {
         _id: new ObjectID(),
         text:"Two",
         completed:true,
-        completedAt: 333
+        completedAt: 333,
+        _creator:  userTwoID
     }
 ]
 

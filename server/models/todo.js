@@ -14,6 +14,11 @@ const Todo = mongoose.model('Todo', {
     completedAt: {
         type: Number,
         default: null
+    },
+    //aggiunto per unire todo con users
+    _creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
     }
 })
 
